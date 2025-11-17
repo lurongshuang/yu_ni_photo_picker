@@ -30,13 +30,13 @@ class PhotoPickerPage extends ConsumerStatefulWidget {
 class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     with TickerProviderStateMixin {
   bool _isAlbumSheetOpen = false;
-  late final TabController _tabController;
+  // late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(_handleTabChanged);
+    // _tabController = TabController(length: 4, vsync: this);
+    // _tabController.addListener(_handleTabChanged);
     WidgetsBinding.instance.addPostFrameCallback((d) async {
       // 初始化设备类型（必须在初始化照片选择器之前）
       if (!DeviceTypeUtil.instance.isInitialized) {
@@ -54,8 +54,8 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChanged);
-    _tabController.dispose();
+    // _tabController.removeListener(_handleTabChanged);
+    // _tabController.dispose();
     super.dispose();
   }
 
@@ -64,17 +64,17 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     final status = ref.watch(photoPickerProvider(widget.config));
     final notifier = ref.read(photoPickerProvider(widget.config).notifier);
     final config = YuniWidgetConfig.instance;
-    final selectedIndex =
-        {
-          AssetCategory.all: 0,
-          AssetCategory.video: 1,
-          AssetCategory.image: 2,
-          AssetCategory.live: 3,
-        }[status.currentCategory] ??
-        0;
-    if (_tabController.index != selectedIndex) {
-      _tabController.index = selectedIndex;
-    }
+    // final selectedIndex =
+    //     {
+    //       AssetCategory.all: 0,
+    //       AssetCategory.video: 1,
+    //       AssetCategory.image: 2,
+    //       AssetCategory.live: 3,
+    //     }[status.currentCategory] ??
+    //     0;
+    // if (_tabController.index != selectedIndex) {
+    //   _tabController.index = selectedIndex;
+    // }
     return Scaffold(
       backgroundColor: config.colors.surface,
       appBar: PhotosAppBar(
@@ -144,7 +144,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
   ) {
     final config = YuniWidgetConfig.instance;
     final sizeText = _formatBytes(status.totalSelectedSize);
-    final children = <Widget>[];
+    // final children = <Widget>[];
     final paddingBottom = MediaQuery.of(context).padding.bottom;
 
     // if (widget.config.showPreviewButton) {
@@ -540,18 +540,18 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     notifier.setCategory(el);
   }
 
-  void _handleTabChanged() {
-    if (!_tabController.indexIsChanging) {
-      final map = [
-        AssetCategory.all,
-        AssetCategory.video,
-        AssetCategory.image,
-        AssetCategory.live,
-      ];
-      final notifier = ref.read(photoPickerProvider(widget.config).notifier);
-      notifier.setCategory(map[_tabController.index]);
-    }
-  }
+  // void _handleTabChanged() {
+  //   if (!_tabController.indexIsChanging) {
+  //     final map = [
+  //       AssetCategory.all,
+  //       AssetCategory.video,
+  //       AssetCategory.image,
+  //       AssetCategory.live,
+  //     ];
+  //     final notifier = ref.read(photoPickerProvider(widget.config).notifier);
+  //     notifier.setCategory(map[_tabController.index]);
+  //   }
+  // }
 }
 
 class AlbumTypeTabBarWidget extends StatelessWidget {
