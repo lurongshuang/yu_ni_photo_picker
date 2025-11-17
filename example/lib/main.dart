@@ -437,6 +437,7 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                       _openCustomMultiple,
                       Colors.deepPurple,
                     ),
+                    const SizedBox(height: 12),
                     _buildButton(
                       '单选图片',
                       Icons.image,
@@ -808,14 +809,14 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                Expanded(
-                  child: SwitchListTile(
-                    title: const Text('升序'),
-                    value: _paramOrderAsc,
-                    onChanged: (v) => setState(() => _paramOrderAsc = v),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
+                // Expanded(
+                //   child: SwitchListTile(
+                //     title: const Text('升序'),
+                //     value: _paramOrderAsc,
+                //     onChanged: (v) => setState(() => _paramOrderAsc = v),
+                //     contentPadding: EdgeInsets.zero,
+                //   ),
+                // ),
               ],
             ),
             Row(
@@ -837,21 +838,19 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
             ),
             Row(
               children: [
-                Expanded(
-                  child: SwitchListTile(
-                    title: const Text('显示预览按钮'),
-                    value: _paramShowPreview,
-                    onChanged:
-                        (v) => setState(() => _paramShowPreview = v),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
+                // Expanded(
+                //   child: SwitchListTile(
+                //     title: const Text('显示预览按钮'),
+                //     value: _paramShowPreview,
+                //     onChanged: (v) => setState(() => _paramShowPreview = v),
+                //     contentPadding: EdgeInsets.zero,
+                //   ),
+                // ),
                 Expanded(
                   child: SwitchListTile(
                     title: const Text('显示原图开关'),
                     value: _paramShowOriginal,
-                    onChanged:
-                        (v) => setState(() => _paramShowOriginal = v),
+                    onChanged: (v) => setState(() => _paramShowOriginal = v),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -862,7 +861,9 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                 labelText: '确认按钮文本',
                 hintText: '例如：上传',
               ),
-              onChanged: (v) => setState(() => _paramConfirmText = v.isEmpty ? '上传' : v),
+              onChanged:
+                  (v) =>
+                      setState(() => _paramConfirmText = v.isEmpty ? '上传' : v),
             ),
           ],
         ),
@@ -883,8 +884,8 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         groupByDate: _paramGroupByDate,
         groupByMonth: _paramGroupByMonth,
         enableCategoryTabs: _paramEnableCategoryTabs,
-        orderAsc: _paramOrderAsc,
-        showPreviewButton: _paramShowPreview,
+        // orderAsc: _paramOrderAsc,
+        // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
         confirmButtonText: _paramConfirmText,
       );
@@ -920,9 +921,9 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         groupByDate: _paramGroupByDate,
         groupByMonth: _paramGroupByMonth,
         enableCategoryTabs: _paramEnableCategoryTabs,
-        orderAsc: _paramOrderAsc,
+        // orderAsc: _paramOrderAsc,
         maxAssets: _paramMaxAssets,
-        showPreviewButton: _paramShowPreview,
+        // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
         confirmButtonText: _paramConfirmText,
       );

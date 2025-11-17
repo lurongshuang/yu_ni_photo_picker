@@ -159,11 +159,7 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
         },
         child: Container(
           padding: const EdgeInsets.all(8),
-          child: RadioIconWidget(
-            selected: state.isCurrentSelected,
-            size: 24,
-            isTransparentUnSelect: true,
-          ),
+          child: RadioIconWidget(selected: state.isCurrentSelected, size: 24),
         ),
       ),
       const SizedBox(width: 8),
@@ -279,8 +275,8 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
                 if (!visible) return const SizedBox.shrink();
                 return Stack(
                   children: [
-                    LivePhotoIconWidget(
-                      size: 18,
+                    LivePhotoWidget(
+                      iconSize: 24,
                       isOpen:
                           state.currentAsset == null
                               ? true
@@ -308,22 +304,67 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
             ),
           ),
         ),
-        if (widget.pickerConfig.showOriginalToggle)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 16 + MediaQuery.of(context).padding.bottom,
-            child: Center(
-              child: _buildOriginalToggle(pickerState, pickerNotifier),
-            ),
-          ),
-        if (state.totalSelectedCount > 0)
-          Positioned(
-            right: 16,
-            bottom: 16 + MediaQuery.of(context).padding.bottom,
-            child: _buildSendButton(notifier, state),
-          ),
+        // if (widget.pickerConfig.showOriginalToggle)
+        //   Positioned(
+        //     left: 0,
+        //     right: 0,
+        //     bottom: 16 + MediaQuery.of(context).padding.bottom,
+        //     child: Center(
+        //       child: _buildOriginalToggle(pickerState, pickerNotifier),
+        //     ),
+        //   ),
+        // if (state.totalSelectedCount > 0)
+        //   Positioned(
+        //     right: 16,
+        //     bottom: 16 + MediaQuery.of(context).padding.bottom,
+        //     child: _buildSendButton(notifier, state),
+        //   ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _buildBottomBar(pickerState, pickerNotifier, notifier, state),
+        ),
       ],
+    );
+  }
+
+  _buildBottomBar(
+    PhotoPickerState pickerState,
+    PhotoPickerNotifier pickerNotifier,
+    notifier,
+    state,
+  ) {
+    final paddingBottom = MediaQuery.of(context).padding.bottom;
+    final config = YuniWidgetConfig.instance;
+
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: paddingBottom + 10,
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          if (widget.pickerConfig.showOriginalToggle &&
+              state.totalSelectedCount > 0)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: _buildOriginalToggle(pickerState, pickerNotifier),
+              ),
+            ),
+          if (state.totalSelectedCount > 0)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: _buildSendButton(notifier, state),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -390,43 +431,27 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
     final sizeText = _formatBytes(pickerState.totalSelectedSize);
     return YTapped(
       onTap: pickerNotifier.toggleSendOriginal,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: config.spacing.md,
-          vertical: config.spacing.xs,
-        ),
-        decoration: BoxDecoration(
-          color: config.colors.surface,
-          borderRadius: config.radius.borderFull,
-          boxShadow: [
-            BoxShadow(
-              color: config.colors.onSurface.withValues(alpha: 0.06),
-              blurRadius: config.spacing.lg,
-              offset: Offset(0, 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RadioIconWidget(selected: pickerState.sendOriginal, size: 20),
+          YSpacing.widthSm(),
+          YText(
+            '原图',
+            style: config.textStyles.bodyMediumBold.copyWith(
+              color: config.colors.onInfo,
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioIconWidget(
-              selected: pickerState.sendOriginal,
-              size: 20,
-              isTransparentUnSelect: true,
-            ),
+          ),
+          if (pickerState.sendOriginal) ...[
             YSpacing.widthSm(),
-            YText('原图', style: config.textStyles.bodyMediumBold),
-            if (pickerState.sendOriginal) ...[
-              YSpacing.widthSm(),
-              YText(
-                sizeText,
-                style: config.textStyles.bodySmallRegular.copyWith(
-                  color: config.colors.onSurface,
-                ),
+            YText(
+              sizeText,
+              style: config.textStyles.bodySmallRegular.copyWith(
+                color: config.colors.onInfo,
               ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

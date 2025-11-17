@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yu_ni_photo_picker/src/components/status_empty_widget.dart';
+import 'package:yuni_widget/yuni_widget.dart';
+
 import '../components/app_bar/photos_app_bar.dart';
-import '../model/photo_picker_state.dart';
-import '../config/photo_picker_config.dart';
-import '../providers/photo_picker_provider.dart';
-import '../widget/album_selector_bottom_sheet.dart';
-import '../components/drag_selectable_grid_view.dart';
 import '../components/date_grouped_grid_view.dart';
+import '../components/drag_selectable_grid_view.dart';
+import '../components/radio_icon_widget.dart';
 import '../components/status_widget.dart';
 import '../config/album_settings.dart';
+import '../config/photo_picker_config.dart';
 import '../constants/app_assets.dart';
+import '../model/photo_picker_state.dart';
+import '../providers/photo_picker_provider.dart';
 import '../utils/asset_util.dart';
 import '../utils/device_type_util.dart';
-import 'package:yuni_widget/yuni_widget.dart';
-import '../components/radio_icon_widget.dart';
+import '../widget/album_selector_bottom_sheet.dart';
 import '../widget/rectangular_indicator.dart';
 
 class PhotoPickerPage extends ConsumerStatefulWidget {
@@ -75,6 +76,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
       _tabController.index = selectedIndex;
     }
     return Scaffold(
+      backgroundColor: config.colors.surface,
       appBar: PhotosAppBar(
         bgColor: Colors.transparent,
         customTitleWidget: YTapped(
@@ -126,9 +128,9 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
           _buildBody(status, notifier),
           if (status.selectedCount > 0)
             Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16 + MediaQuery.of(context).padding.bottom,
+              left: 0,
+              right: 0,
+              bottom: 0,
               child: _buildBottomBar(status, notifier),
             ),
         ],
@@ -143,86 +145,66 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     final config = YuniWidgetConfig.instance;
     final sizeText = _formatBytes(status.totalSelectedSize);
     final children = <Widget>[];
-    if (widget.config.showPreviewButton) {
-      children.add(
-        Align(
-          alignment: Alignment.centerLeft,
+    final paddingBottom = MediaQuery.of(context).padding.bottom;
+
+    // if (widget.config.showPreviewButton) {
+    //   children.add(
+    //     Align(
+    //       alignment: Alignment.centerLeft,
+    //       child: YTapped(
+    //         onTap: () => notifier.previewSelected(context),
+    //         child: Container(
+    //           padding: EdgeInsets.symmetric(
+    //             horizontal: config.spacing.md,
+    //           ),
+    //           decoration: BoxDecoration(
+    //             color: config.colors.surface,
+    //             borderRadius: config.radius.borderFull,
+    //             boxShadow: [
+    //               BoxShadow(
+    //                 color: config.colors.onSurface.withValues(alpha: 0.06),
+    //                 blurRadius: config.spacing.lg,
+    //                 offset: Offset(0, 2),
+    //               ),
+    //             ],
+    //           ),
+    //           child: Container(
+    //             padding: EdgeInsets.symmetric(vertical: config.spacing.sm),
+    //             child: YText('预览', style: config.textStyles.bodyMediumBold),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
+
+    if (!widget.config.showOriginalToggle) {
+      return Container(
+        padding: EdgeInsets.only(bottom: paddingBottom + 16),
+        child: Center(
           child: YTapped(
-            onTap: () => notifier.previewSelected(context),
+            onTap: () => notifier.confirm(context),
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: config.spacing.md,
-                vertical: config.spacing.xs,
+                horizontal: config.spacing.lg,
+                vertical: config.spacing.sm,
               ),
               decoration: BoxDecoration(
-                color: config.colors.surface,
+                color: config.colors.onBackground.withValues(alpha: 0.8),
                 borderRadius: config.radius.borderFull,
-                boxShadow: [
-                  BoxShadow(
-                    color: config.colors.onSurface.withValues(alpha: 0.06),
-                    blurRadius: config.spacing.lg,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: config.spacing.sm),
-                child: YText('预览', style: config.textStyles.bodyMediumBold),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    if (widget.config.showOriginalToggle) {
-      children.add(
-        Center(
-          child: YTapped(
-            onTap: notifier.toggleSendOriginal,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: config.spacing.md,
-                vertical: config.spacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: config.colors.surface,
-                borderRadius: config.radius.borderFull,
-                boxShadow: [
-                  BoxShadow(
-                    color: config.colors.onSurface.withValues(alpha: 0.06),
-                    blurRadius: config.spacing.lg,
-                    offset: Offset(0, 2),
-                  ),
-                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  RadioIconWidget(
-                    selected: status.sendOriginal,
-                    size: 20,
-                    isTransparentUnSelect: true,
-                  ),
-                  YSpacing.widthSm(),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: config.spacing.sm),
-                    child: YText(
-                      '原图',
-                      style: config.textStyles.bodyMediumBold.copyWith(
-                        height: 1,
-                      ),
+                  AssetUtil.loadSvg(AppAssets.svg.uploadBtn, width: 24),
+                  YSpacing.widthXs(),
+                  YText(
+                    "${widget.config.confirmButtonText}${status.selectedCount}个项目",
+                    style: config.textStyles.bodyMediumBold.copyWith(
+                      color: config.colors.onPrimary,
+                      height: 1,
                     ),
                   ),
-                  if (status.sendOriginal) ...[
-                    YSpacing.widthSm(),
-                    YText(
-                      sizeText,
-                      style: config.textStyles.bodySmallRegular.copyWith(
-                        color: config.colors.onSurface,
-                        height: 1,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -230,63 +212,131 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
         ),
       );
     }
-    children.add(
-      Align(
-        alignment: Alignment.centerRight,
-        child: YTapped(
-          onTap: () => notifier.confirm(context),
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: config.spacing.md,
-              vertical: config.spacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: config.colors.primary,
-              borderRadius: config.radius.borderFull,
-              boxShadow: [
-                BoxShadow(
-                  color: config.colors.onSurface.withValues(alpha: 0.1),
-                  blurRadius: config.spacing.lg,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                YText(
-                  widget.config.confirmButtonText,
-                  style: config.textStyles.bodyMediumBold.copyWith(
-                    color: config.colors.onPrimary,
-                    height: 1,
-                  ),
-                ),
-                YSpacing.widthSm(),
-                Container(
-                  padding: EdgeInsets.all(config.spacing.sm),
-                  decoration: BoxDecoration(
-                    color: config.colors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: YText(
-                      '${status.selectedCount}',
-                      style: config.textStyles.bodySmallBold.copyWith(
-                        color: config.colors.onPrimary,
-                        height: 1,
-                      ),
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: paddingBottom + 10,
+        top: 10,
+        left: 10,
+        right: 10,
+      ),
+      decoration: BoxDecoration(
+        color: config.colors.surface,
+        border: Border(
+          top: BorderSide(color: config.colors.background, width: 1),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          if (widget.config.showOriginalToggle)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: YTapped(
+                  onTap: notifier.toggleSendOriginal,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: config.spacing.md,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        RadioIconWidget(
+                          selected: status.sendOriginal,
+                          size: 20,
+                          color:
+                              status.sendOriginal
+                                  ? null
+                                  : config.colors.background,
+                        ),
+                        YSpacing.widthSm(),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: config.spacing.sm,
+                          ),
+                          child: YText(
+                            '原图',
+                            style: config.textStyles.bodyMediumBold.copyWith(
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                        if (status.sendOriginal) ...[
+                          YSpacing.widthSm(),
+                          YText(
+                            sizeText,
+                            style: config.textStyles.bodySmallRegular.copyWith(
+                              color: config.colors.onSurface,
+                              height: 1,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
-              ],
+              ),
+            ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: YTapped(
+                onTap: () => notifier.confirm(context),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: config.spacing.md,
+                    vertical: config.spacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: config.colors.primary,
+                    borderRadius: config.radius.borderFull,
+                    boxShadow: [
+                      BoxShadow(
+                        color: config.colors.onSurface.withValues(alpha: 0.1),
+                        blurRadius: config.spacing.lg,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      YText(
+                        widget.config.confirmButtonText,
+                        style: config.textStyles.bodyMediumBold.copyWith(
+                          color: config.colors.onPrimary,
+                          height: 1,
+                        ),
+                      ),
+                      YSpacing.widthSm(),
+                      Container(
+                        padding: EdgeInsets.all(config.spacing.sm),
+                        decoration: BoxDecoration(
+                          color: config.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: YText(
+                            '${status.selectedCount}',
+                            style: config.textStyles.bodySmallBold.copyWith(
+                              color: config.colors.onPrimary,
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
-    return Stack(children: children);
   }
 
   String _formatBytes(int bytes) {
@@ -348,7 +398,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
           if (widget.config.enableCategoryTabs)
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: config.spacing.sm,
+                horizontal: 20,
                 vertical: config.spacing.md,
               ),
               child: _buildCategoryTabs(status, notifier),
@@ -364,7 +414,10 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
                       : Padding(
                         key: ValueKey(status.currentCategory),
                         padding: EdgeInsets.symmetric(
-                          horizontal: config.spacing.sm,
+                          horizontal:
+                              widget.config.groupByDate
+                                  ? config.spacing.sm
+                                  : config.spacing.zero,
                         ),
                         child: DateGroupedGridView(
                           assets: status.assets,
@@ -372,7 +425,12 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
                           groupByMonth: widget.config.groupByMonth,
                           sortType: AlbumSortType.shootTime,
                           crossAxisCount: crossAxisCount,
-                          padding: EdgeInsets.all(config.spacing.sm),
+                          padding: EdgeInsets.only(
+                            // left: config.spacing.sm,
+                            // right: config.spacing.sm,
+                            // top: config.spacing.sm,
+                            bottom: 140,
+                          ),
                           controller: notifier.scrollController,
                           enableDragSelection: widget.config.allowMultiple,
                           selectionController: notifier.selectionController,
@@ -412,21 +470,74 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     );
   }
 
+  final map = [
+    AssetCategory.all,
+    AssetCategory.video,
+    AssetCategory.image,
+    AssetCategory.live,
+  ];
+
   Widget _buildCategoryTabs(
     PhotoPickerState status,
     PhotoPickerNotifier notifier,
   ) {
-    final tabs = const [
-      Tab(text: '全部'),
-      Tab(text: '视频'),
-      Tab(text: '照片'),
-      Tab(text: '实况图'),
-    ];
-    return AlbumTypeTabBarWidget(
-      tabController: _tabController,
-      tabViews: tabs,
-      height: 48,
+    final config = YuniWidgetConfig.instance;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      spacing: 10,
+      children: [
+        ...map.map(
+          (el) => Expanded(
+            child: YTapped(
+              enableScale: true,
+              onTap: () {
+                _tabChanged(el);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color:
+                      status.currentCategory == el
+                          ? config.colors.primary
+                          : config.colors.background,
+                  borderRadius: config.radius.borderFull,
+                ),
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: YText(
+                  getCateText(el),
+                  style:
+                      status.currentCategory == el
+                          ? config.textStyles.labelLargeBold.copyWith(
+                            height: 1,
+                            color: config.colors.onPrimary,
+                          )
+                          : config.textStyles.labelLargeRegular.copyWith(
+                            height: 1,
+                            color: config.colors.onBackground,
+                          ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
+    // return AlbumTypeTabBarWidget(
+    //   tabController: _tabController,
+    //   tabViews: tabs,
+    //   height: 48,
+    // );
+  }
+
+  String getCateText(AssetCategory el) {
+    final tabs = const ['全部', '视频', '照片', '实况图'];
+
+    return tabs[el.index];
+  }
+
+  void _tabChanged(AssetCategory el) {
+    final notifier = ref.read(photoPickerProvider(widget.config).notifier);
+    notifier.setCategory(el);
   }
 
   void _handleTabChanged() {
@@ -469,22 +580,20 @@ class AlbumTypeTabBarWidget extends StatelessWidget {
         controller: tabController,
         padding: EdgeInsets.zero,
         tabs: tabViews,
-        labelColor: config.colors.onSurface,
-        unselectedLabelColor: config.colors.withAlpha(
-          config.colors.onBackground,
-          0.6,
-        ),
+        labelColor: config.colors.onPrimary,
         labelPadding: EdgeInsets.zero,
-        unselectedLabelStyle: config.textStyles.labelLargeRegular,
-        labelStyle: config.textStyles.labelLargeRegular.copyWith(
+        unselectedLabelStyle: config.textStyles.labelLargeRegular.copyWith(
           color: config.colors.onBackground,
         ),
+        labelStyle: config.textStyles.labelLargeRegular.copyWith(
+          color: config.colors.onPrimary,
+        ),
         indicator: RectangularIndicator(
-          topLeftRadius: config.radius.lg - 2,
-          topRightRadius: config.radius.lg - 2,
-          bottomLeftRadius: config.radius.lg - 2,
-          bottomRightRadius: config.radius.lg - 2,
-          color: config.colors.background,
+          topLeftRadius: config.radius.full,
+          topRightRadius: config.radius.full,
+          bottomLeftRadius: config.radius.full,
+          bottomRightRadius: config.radius.full,
+          color: config.colors.primary,
           paintingStyle: PaintingStyle.fill,
         ),
       ),

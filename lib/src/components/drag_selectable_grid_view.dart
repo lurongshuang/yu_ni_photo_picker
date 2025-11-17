@@ -749,6 +749,9 @@ class DragSelectionController {
   /// 检查指定索引是否被选中
   bool isSelected(int index) => _selectedIndices.contains(index);
 
+  /// 检查指定索引是否被选中
+  bool isSelectedChild(int index) => _selectedIndices.contains(index);
+
   /// 选中的数量
   int get selectedCount => _selectedIndices.length;
 

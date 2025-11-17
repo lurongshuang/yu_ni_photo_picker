@@ -10,11 +10,11 @@ class PhotoPickerConfig {
   /// 请求资源类型（图片/视频）
   final List<AssetType> requestType;
 
-  /// 排序方式
-  final OrderOptionType orderBy;
+  // /// 排序方式
+  // final OrderOptionType orderBy;
 
-  /// 是否升序
-  final bool orderAsc;
+  // /// 是否升序
+  // final bool orderAsc;
 
   /// 是否按日期分组
   final bool groupByDate;
@@ -25,8 +25,8 @@ class PhotoPickerConfig {
   /// 是否启用多分类Tab
   final bool enableCategoryTabs;
 
-  /// 是否显示预览按钮
-  final bool showPreviewButton;
+  // /// 是否显示预览按钮
+  // final bool showPreviewButton;
 
   /// 是否显示原图开关
   final bool showOriginalToggle;
@@ -38,12 +38,12 @@ class PhotoPickerConfig {
     this.allowMultiple = false,
     this.maxAssets = 5000,
     this.requestType = const [AssetType.image],
-    this.orderBy = OrderOptionType.createDate,
-    this.orderAsc = false,
+    // this.orderBy = OrderOptionType.createDate,
+    // this.orderAsc = false,
     this.groupByDate = false,
     this.groupByMonth = false,
     this.enableCategoryTabs = false,
-    this.showPreviewButton = false,
+    // this.showPreviewButton = false,
     this.showOriginalToggle = false,
     this.confirmButtonText = '上传',
   });

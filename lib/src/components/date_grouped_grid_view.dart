@@ -12,75 +12,76 @@ import 'package:vs_scrollbar/vs_scrollbar.dart';
 class DateGroupedGridView extends StatelessWidget {
   /// 资源列表
   final List<ChoiceAssetEntity> assets;
-  
+
   /// 是否按日期分组
   final bool groupByDate;
+
   /// 是否按月份分组
   final bool groupByMonth;
-  
+
   /// 排序方式
   final AlbumSortType sortType;
-  
+
   /// 网格列数
   final int crossAxisCount;
-  
+
   /// 列间距
   final double crossAxisSpacing;
-  
+
   /// 行间距
   final double mainAxisSpacing;
-  
+
   /// GridView 的 padding
   final EdgeInsetsGeometry? padding;
-  
+
   /// 滚动控制器
   final ScrollController? controller;
-  
+
   /// 是否启用滑动选择
   final bool enableDragSelection;
-  
+
   /// 选择控制器
   final DragSelectionController? selectionController;
-  
+
   /// 选择模式
   final SelectionMode selectionMode;
-  
+
   /// 最大选择数量
   final int maxSelection;
-  
+
   /// 滑动选择开始回调
   final void Function(int index)? onDragSelectionStart;
-  
+
   /// 滑动选择更新回调
   final void Function(int index)? onDragSelectionUpdate;
-  
+
   /// 滑动选择结束回调
   final void Function()? onDragSelectionEnd;
-  
+
   /// 选中状态变化回调
   final void Function(Set<int> selectedIndices)? onSelectionChanged;
-  
+
   /// 单个项目选择状态变化回调
   final void Function(int index, bool isSelected)? onItemSelectionChanged;
-  
+
   /// 获取指定索引item的选中状态
   final bool Function(int index)? isItemSelected;
-  
+
   /// 点击item回调
   final void Function(int index)? onItemTap;
-  
+
   /// 长按item回调
   final void Function(int index)? onItemLongPress;
-  
+
   /// 布局格式
   final AlbumLayoutFormat layoutFormat;
-  
+
   /// 配置
   final PhotoPickerConfig config;
-  
+
   /// 是否还有更多数据
   final bool hasMore;
-  
+
   /// 是否正在加载更多
   final bool isLoadingMore;
 
@@ -126,30 +127,35 @@ class DateGroupedGridView extends StatelessWidget {
     // 计算分段信息（维护资产全局起始索引，避免日期头影响索引映射）
     final List<_SectionInfo> sections = [];
     int assetStartIndexCounter = 0;
-    
+
     for (final group in groupedAssets) {
       if (groupByDate && group.dateKey.isNotEmpty) {
         // 日期标题占1个位置
-        sections.add(_SectionInfo(
-          type: _ItemType.dateHeader,
-          dateLabel: group.dateLabel,
-          itemCount: 1,
-        ));
+        sections.add(
+          _SectionInfo(
+            type: _ItemType.dateHeader,
+            dateLabel: group.dateLabel,
+            itemCount: 1,
+          ),
+        );
       }
-      
+
       // 该日期下的资源
-      sections.add(_SectionInfo(
-        type: _ItemType.asset,
-        assets: group.assets,
-        assetStartIndex: assetStartIndexCounter,
-        itemCount: group.assets.length,
-      ));
+      sections.add(
+        _SectionInfo(
+          type: _ItemType.asset,
+          assets: group.assets,
+          assetStartIndex: assetStartIndexCounter,
+          itemCount: group.assets.length,
+        ),
+      );
       assetStartIndexCounter += group.assets.length;
     }
-    
-    final groupBy = groupByDate
-        ? (groupByMonth ? ag.GroupAssetsBy.month : ag.GroupAssetsBy.day)
-        : ag.GroupAssetsBy.none;
+
+    final groupBy =
+        groupByDate
+            ? (groupByMonth ? ag.GroupAssetsBy.month : ag.GroupAssetsBy.day)
+            : ag.GroupAssetsBy.none;
     final renderList = ag.RenderList.fromAssets(assets, groupBy);
     final idToIndex = <String, int>{};
     for (int i = 0; i < assets.length; i++) {
@@ -163,6 +169,7 @@ class DateGroupedGridView extends StatelessWidget {
         margin: crossAxisSpacing,
         controller: controller,
         config: config,
+        padding: padding,
         selectionActive: selectionMode == SelectionMode.multiple,
         onRefresh: null,
         listener: (active, selectedIds) {
@@ -205,7 +212,7 @@ class DateGroupedGridView extends StatelessWidget {
 /// 项目类型
 enum _ItemType {
   dateHeader, // 日期标题
-  asset,      // 资源项
+  asset, // 资源项
 }
 
 /// 分组信息
@@ -224,4 +231,3 @@ class _SectionInfo {
     required this.itemCount,
   });
 }
-

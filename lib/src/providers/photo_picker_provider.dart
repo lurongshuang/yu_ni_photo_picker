@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:yuni_widget/yuni_widget.dart';
 import '../utils/page_status.dart';
 import '../config/picker_file.dart';
 import '../model/photo_picker_state.dart';
@@ -16,10 +17,12 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
   late final DragSelectionController _selectionController;
   bool _recalculatingSize = false;
 
-  PhotoPickerNotifier({required this.config}) : super(const PhotoPickerState()) {
+  PhotoPickerNotifier({required this.config})
+    : super(const PhotoPickerState()) {
     // 初始化选择控制器
     _selectionController = DragSelectionController(
-      selectionMode: config.allowMultiple ? SelectionMode.multiple : SelectionMode.single,
+      selectionMode:
+          config.allowMultiple ? SelectionMode.multiple : SelectionMode.single,
       maxSelection: config.maxAssets,
       onSelectionChanged: _onSelectionChanged,
       onItemSelectionChanged: _onItemSelectionChanged,
@@ -38,16 +41,20 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     switch (category) {
       case AssetCategory.video:
         return base
-            .where((e) => e.asset.type == AssetType.video || e.asset.type == AssetType.audio)
+            .where(
+              (e) =>
+                  e.asset.type == AssetType.video ||
+                  e.asset.type == AssetType.audio,
+            )
             .toList();
       case AssetCategory.image:
         return base
-            .where((e) => e.asset.type == AssetType.image && !e.asset.isLivePhoto)
+            .where(
+              (e) => e.asset.type == AssetType.image && !e.asset.isLivePhoto,
+            )
             .toList();
       case AssetCategory.live:
-        return base
-            .where((e) => e.asset.isLivePhoto)
-            .toList();
+        return base.where((e) => e.asset.isLivePhoto).toList();
       case AssetCategory.all:
         return base;
     }
@@ -57,7 +64,8 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     final display = _applyCategoryFilter(state.allAssets, category);
     // 先更新可见列表为当前分类
     final currentAlbumSelectedCount = display.where((a) => a.isSelected).length;
-    final isAllSelected = currentAlbumSelectedCount == display.length && display.isNotEmpty;
+    final isAllSelected =
+        currentAlbumSelectedCount == display.length && display.isNotEmpty;
     state = state.copyWith(
       currentCategory: category,
       assets: display,
@@ -76,11 +84,12 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
   // 选择状态变化回调
   void _onSelectionChanged(Set<int> selectedIndices) {
     // 获取当前相册中选中的资源
-    final currentAlbumSelectedAssets = selectedIndices
-        .where((index) => index >= 0 && index < state.assets.length)
-        .map((index) => state.assets[index].asset)
-        .toList();
-    
+    final currentAlbumSelectedAssets =
+        selectedIndices
+            .where((index) => index >= 0 && index < state.assets.length)
+            .map((index) => state.assets[index].asset)
+            .toList();
+
     // 更新本地选择状态
     final updatedAssets = List<ChoiceAssetEntity>.from(state.assets);
     for (int i = 0; i < updatedAssets.length; i++) {
@@ -90,14 +99,19 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     // 更新全局选择状态
     // 多选：保留其他相册的选中项，合并当前相册选中项
     // 单选：全局最多1个；当当前分类没有可见选中时，若之前的选中不属于当前分类，则保留之前的选中
-    final currentAlbumAssetIds = state.assets.map((asset) => asset.asset.id).toSet();
-    final otherAlbumsSelectedAssets = state.globalSelectedAssets
-        .where((asset) => !currentAlbumAssetIds.contains(asset.id))
-        .toList();
+    final currentAlbumAssetIds =
+        state.assets.map((asset) => asset.asset.id).toSet();
+    final otherAlbumsSelectedAssets =
+        state.globalSelectedAssets
+            .where((asset) => !currentAlbumAssetIds.contains(asset.id))
+            .toList();
 
     List<AssetEntity> newGlobalSelectedAssets;
     if (config.allowMultiple) {
-      newGlobalSelectedAssets = [...otherAlbumsSelectedAssets, ...currentAlbumSelectedAssets];
+      newGlobalSelectedAssets = [
+        ...otherAlbumsSelectedAssets,
+        ...currentAlbumSelectedAssets,
+      ];
     } else {
       if (currentAlbumSelectedAssets.isEmpty) {
         // 当前分类没有选中项：判断之前的选中是否属于当前分类
@@ -109,7 +123,9 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
           newGlobalSelectedAssets = const [];
         } else {
           // 切换到不包含已选项的分类：保留之前的选中
-          newGlobalSelectedAssets = List<AssetEntity>.from(state.globalSelectedAssets);
+          newGlobalSelectedAssets = List<AssetEntity>.from(
+            state.globalSelectedAssets,
+          );
         }
       } else {
         // 当前分类有选中：替换全局为当前选中
@@ -118,19 +134,25 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     }
 
     // 计算当前相册是否全选
-    final currentAlbumSelectedCount = updatedAssets.where((asset) => asset.isSelected).length;
-    final isAllSelected = currentAlbumSelectedCount == updatedAssets.length && updatedAssets.isNotEmpty;
+    final currentAlbumSelectedCount =
+        updatedAssets.where((asset) => asset.isSelected).length;
+    final isAllSelected =
+        currentAlbumSelectedCount == updatedAssets.length &&
+        updatedAssets.isNotEmpty;
 
     // 单选模式下需要同步 allAssets 的选中标记为全局唯一选中
     List<ChoiceAssetEntity> updatedAllAssets = state.allAssets;
     if (!config.allowMultiple) {
       final selectedIds = newGlobalSelectedAssets.map((e) => e.id).toSet();
-      updatedAllAssets = state.allAssets
-          .map((item) => ChoiceAssetEntity(
-                asset: item.asset,
-                isSelected: selectedIds.contains(item.asset.id),
-              ))
-          .toList();
+      updatedAllAssets =
+          state.allAssets
+              .map(
+                (item) => ChoiceAssetEntity(
+                  asset: item.asset,
+                  isSelected: selectedIds.contains(item.asset.id),
+                ),
+              )
+              .toList();
     }
 
     state = state.copyWith(
@@ -148,7 +170,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     if (index >= 0 && index < state.assets.length) {
       final asset = state.assets[index];
       asset.isSelected = isSelected;
-      
+
       // 触发整体选择状态更新
       _onSelectionChanged(_selectionController.selectedIndices);
     }
@@ -223,7 +245,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
       final uniqueAssets = <ChoiceAssetEntity>[];
       final assetIds = <String>{};
       final selectedIndices = <int>{};
-      
+
       for (int i = 0; i < firstPage.length; i++) {
         final asset = firstPage[i];
         if (!assetIds.contains(asset.id)) {
@@ -234,7 +256,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
             ChoiceAssetEntity(asset: asset, isSelected: isSelected),
           );
           assetIds.add(asset.id);
-          
+
           // 如果该资源被选中，记录其索引
           if (isSelected) {
             selectedIndices.add(i);
@@ -242,10 +264,16 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
         }
       }
 
-      final displayAssets = _applyCategoryFilter(uniqueAssets, state.currentCategory);
+      final displayAssets = _applyCategoryFilter(
+        uniqueAssets,
+        state.currentCategory,
+      );
       // 计算当前相册是否全选
-      final currentAlbumSelectedCount = displayAssets.where((asset) => asset.isSelected).length;
-      final isAllSelected = currentAlbumSelectedCount == displayAssets.length && displayAssets.isNotEmpty;
+      final currentAlbumSelectedCount =
+          displayAssets.where((asset) => asset.isSelected).length;
+      final isAllSelected =
+          currentAlbumSelectedCount == displayAssets.length &&
+          displayAssets.isNotEmpty;
 
       // 先设置最新的展示列表
       state = state.copyWith(
@@ -298,7 +326,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
       final uniqueAssets = <ChoiceAssetEntity>[];
       final assetIds = <String>{};
       final selectedIndices = <int>{};
-      
+
       for (int i = 0; i < firstPage.length; i++) {
         final asset = firstPage[i];
         if (!assetIds.contains(asset.id)) {
@@ -309,7 +337,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
             ChoiceAssetEntity(asset: asset, isSelected: isSelected),
           );
           assetIds.add(asset.id);
-          
+
           // 如果该资源被选中，记录其索引
           if (isSelected) {
             selectedIndices.add(i);
@@ -317,9 +345,15 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
         }
       }
 
-      final displayAssets = _applyCategoryFilter(uniqueAssets, state.currentCategory);
-      final currentAlbumSelectedCount = displayAssets.where((asset) => asset.isSelected).length;
-      final isAllSelected = currentAlbumSelectedCount == displayAssets.length && displayAssets.isNotEmpty;
+      final displayAssets = _applyCategoryFilter(
+        uniqueAssets,
+        state.currentCategory,
+      );
+      final currentAlbumSelectedCount =
+          displayAssets.where((asset) => asset.isSelected).length;
+      final isAllSelected =
+          currentAlbumSelectedCount == displayAssets.length &&
+          displayAssets.isNotEmpty;
 
       // 先设置最新的展示列表
       state = state.copyWith(
@@ -386,7 +420,7 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
 
       // 检查并避免重复添加相同的资源，并恢复选中状态
       final existingIds = newAssets.map((e) => e.asset.id).toSet();
-      
+
       for (final asset in pageList) {
         if (!existingIds.contains(asset.id)) {
           bool isSelected = state.globalSelectedAssets.any(
@@ -405,11 +439,13 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
             ChoiceAssetEntity(asset: asset, isSelected: isSelected),
           );
           existingIds.add(asset.id);
-          
         }
       }
 
-      final displayAssets = _applyCategoryFilter(newAssets, state.currentCategory);
+      final displayAssets = _applyCategoryFilter(
+        newAssets,
+        state.currentCategory,
+      );
       final loadedCount = newAssets.length;
       final hasMore = loadedCount < state.totalCount;
 
@@ -462,9 +498,17 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     final assets = state.assets;
     final index = assets.indexWhere((item) => item.asset.id == asset.id);
 
+    final isSelect = _selectionController.isSelected(index);
+    if (state.selectedCount >= config.maxAssets && !isSelect) {
+      YToastHelper.toast("最多只能选择${config.maxAssets}");
+      return;
+    }
     if (index >= 0) {
       // 使用选择控制器处理选择逻辑
-      _selectionController.toggleSelection(index, targetSelected: targetSelected);
+      _selectionController.toggleSelection(
+        index,
+        targetSelected: targetSelected,
+      );
     }
   }
 
@@ -501,30 +545,32 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
   void previewSelected(BuildContext context) {
     final selected = state.globalSelectedAssets;
     if (selected.isEmpty) return;
-    final choice = selected
-        .map((e) => ChoiceAssetEntity(asset: e, isSelected: true))
-        .toList();
+    final choice =
+        selected
+            .map((e) => ChoiceAssetEntity(asset: e, isSelected: true))
+            .toList();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => PhotoViewerPage(
-          assets: choice,
-          pickerConfig: config,
-          initialIndex: 0,
-          enableSelection: true,
-          maxSelection: config.maxAssets,
-          globalSelectedCount: state.selectedCount,
-          onSelectionChanged: (asset, isSelected, globalSelectedCount) {
-            toggleSelect(asset, targetSelected: isSelected);
-          },
-          onSend: () {
-            Navigator.of(context).pop();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                confirm(context);
-              }
-            });
-          },
-        ),
+        builder:
+            (context) => PhotoViewerPage(
+              assets: choice,
+              pickerConfig: config,
+              initialIndex: 0,
+              enableSelection: true,
+              maxSelection: config.maxAssets,
+              globalSelectedCount: state.selectedCount,
+              onSelectionChanged: (asset, isSelected, globalSelectedCount) {
+                toggleSelect(asset, targetSelected: isSelected);
+              },
+              onSend: () {
+                Navigator.of(context).pop();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (context.mounted) {
+                    confirm(context);
+                  }
+                });
+              },
+            ),
       ),
     );
   }
@@ -621,7 +667,8 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
               // 单选模式也启用"右上角选中组件"（单选按钮），但将最大选择数量限制为 1
               enableSelection: true,
               maxSelection: config.allowMultiple ? config.maxAssets : 1,
-              globalSelectedCount: state.selectedCount, // 传递全局选中数量
+              globalSelectedCount: state.selectedCount,
+              // 传递全局选中数量
               onSelectionChanged: (asset, isSelected, globalSelectedCount) {
                 // 同步选择状态到PhotoPicker，显式传入目标选中状态
                 toggleSelect(asset, targetSelected: isSelected);
@@ -651,4 +698,3 @@ final photoPickerProvider = StateNotifierProvider.autoDispose
     ) {
       return PhotoPickerNotifier(config: config);
     });
-

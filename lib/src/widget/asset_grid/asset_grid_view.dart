@@ -34,6 +34,7 @@ class AssetGridView extends StatefulWidget {
   final PhotoPickerConfig config;
   final void Function(int index)? onItemTap;
   final void Function(int index)? onItemLongPress;
+  final EdgeInsetsGeometry? padding;
 
   const AssetGridView({
     super.key,
@@ -51,6 +52,7 @@ class AssetGridView extends StatefulWidget {
     required this.config,
     this.onItemTap,
     this.onItemLongPress,
+    this.padding,
   });
 
   @override
@@ -140,10 +142,19 @@ class _AssetGridViewState extends State<AssetGridView> {
     try {
       final all = widget.renderList.allAssets;
       if (all.isNotEmpty) {
-        final start = (absoluteIndex + widget.assetsPerRow).clamp(0, all.length);
-        final end = (start + widget.assetsPerRow * 40).clamp(0, all.length); // 预取约40行
+        final start = (absoluteIndex + widget.assetsPerRow).clamp(
+          0,
+          all.length,
+        );
+        final end = (start + widget.assetsPerRow * 40).clamp(
+          0,
+          all.length,
+        ); // 预取约40行
         final upcoming = all.sublist(start, end).map((e) => e.asset).toList();
-        PhotoPickerService.preloadThumbnails(upcoming, defaultAssetGridPreviewSize);
+        PhotoPickerService.preloadThumbnails(
+          upcoming,
+          defaultAssetGridPreviewSize,
+        );
       }
     } catch (_) {}
     setState(() {
@@ -368,6 +379,7 @@ class _AssetGridViewState extends State<AssetGridView> {
       shrinkWrap: widget.shrinkWrap,
       controller: widget.controller,
       itemCount: widget.renderList.elements.length,
+      padding: widget.padding,
       itemBuilder:
           (c, index) => _buildSection(widget.renderList.elements[index], index),
     );

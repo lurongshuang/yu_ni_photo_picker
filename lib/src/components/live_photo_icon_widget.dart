@@ -7,8 +7,9 @@ import 'package:yuni_widget/yuni_widget.dart';
 ///实况图片图标
 class LivePhotoWidget extends StatelessWidget {
   final double? iconSize;
+  final bool isOpen;
 
-  const LivePhotoWidget({super.key, this.iconSize});
+  const LivePhotoWidget({super.key, this.iconSize, this.isOpen = true});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +32,14 @@ class LivePhotoWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                LivePhotoIconWidget(size: iconSize ?? 18),
+                LivePhotoIconWidget(size: iconSize ?? 18, isOpen: isOpen),
                 YSpacing.widthXxs(),
                 YSpacing.widthXs(),
-                YText.bodySmallRegular("LIVE", color: config.colors.onPrimary),
+                YText(
+                  "LIVE",
+                  color: config.colors.onPrimary,
+                  style: config.textStyles.bodySmallRegular.copyWith(height: 1),
+                ),
               ],
             ),
           ),
@@ -53,17 +58,16 @@ class LivePhotoIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isOpen) {
-      return AssetUtil.loadAssetsImage(
-        AppAssets.images.livePhotoIcon,
+      return AssetUtil.loadSvg(
+        AppAssets.svg.livePhotoSvg,
         width: size,
         height: size,
       );
     }
-    return Icon(Icons.motion_photos_off, size: size);
-    // return AssetUtil.loadAssetsImage(
-    //   AppAssets.images.livePhotoIcon,
-    //   width: size,
-    //   height: size,
-    // );
+    return AssetUtil.loadSvg(
+      AppAssets.svg.livePhotoOffSvg,
+      width: size,
+      height: size,
+    );
   }
 }

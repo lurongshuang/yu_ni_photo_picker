@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:yu_ni_photo_picker/src/constants/app_assets.dart';
+import 'package:yu_ni_photo_picker/src/utils/asset_util.dart';
 import '../components/live_photo_icon_widget.dart';
 import '../model/photo_picker_state.dart';
 import '../config/photo_picker_config.dart';
@@ -102,7 +104,6 @@ class _PhotoPickerItemState extends ConsumerState<PhotoPickerItem> {
                     child: RadioIconWidget(
                       size: 20,
                       selected: widget.entity.isSelected,
-                      isTransparentUnSelect: true,
                     ),
                   ),
                 ),
@@ -153,7 +154,7 @@ class _PhotoPickerItemState extends ConsumerState<PhotoPickerItem> {
                       child: YSpacing.all(
                         all: config.spacing.xs,
                         child: LivePhotoIconWidget(
-                          size: 18,
+                          size: 24,
                           isOpen:
                               status.liveVideoUploadMap[widget
                                   .entity
@@ -185,11 +186,15 @@ class _PhotoPickerItemState extends ConsumerState<PhotoPickerItem> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  margin: EdgeInsets.all(config.spacing.xs),
+                  margin: EdgeInsets.all(config.spacing.xxs),
                   decoration: BoxDecoration(
                     color: config.colors.onBackground.withValues(alpha: 0.5),
+                    borderRadius: config.radius.borderSm,
                   ),
-                  child: Icon(Icons.zoom_out_map_rounded, size: 18),
+                  child: AssetUtil.loadAssetsImage(
+                    AppAssets.images.zoomIcon,
+                    width: 21,
+                  ),
                 ),
               ),
               Positioned(
