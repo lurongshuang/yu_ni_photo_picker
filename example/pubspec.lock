@@ -171,14 +171,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
-  flutter_photo_manager_motion_photo:
-    dependency: transitive
-    description:
-      name: flutter_photo_manager_motion_photo
-      sha256: e42582347c49081e5d878a054c9ea3e7a39daa299f1ef09b5403511d8543b9a9
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.2"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -746,7 +738,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.4"
+    version: "1.0.1"
   yuni_widget:
     dependency: "direct main"
     description:

@@ -29,7 +29,14 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     );
   }
 
-  final ScrollController scrollController = ScrollController();
+  final Map<AssetCategory, ScrollController> _controllers = {};
+  AssetCategory? _attachedCategory;
+
+  ScrollController _getOrCreateController(AssetCategory category) {
+    return _controllers.putIfAbsent(category, () => ScrollController());
+  }
+
+  ScrollController get scrollController => _getOrCreateController(state.currentCategory);
 
   // 获取选择控制器
   DragSelectionController get selectionController => _selectionController;
@@ -72,6 +79,8 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
       allSelected: isAllSelected,
       selectedCount: state.globalSelectedAssets.length,
     );
+
+    _switchActiveController(category);
 
     // 再同步选择控制器索引，确保回调使用最新的 state.assets
     final selectedIndices = <int>{};
@@ -177,14 +186,26 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
   }
 
   Future<void> initialization(BuildContext context) async {
-    scrollController.addListener(_onScroll);
+    _switchActiveController(state.currentCategory);
     state = state.copyWith(status: PageStatus.loading);
     loadAssets();
   }
 
+  void _switchActiveController(AssetCategory category) {
+    if (_attachedCategory != null) {
+      final old = _controllers[_attachedCategory!];
+      old?.removeListener(_onScroll);
+    }
+    final controller = _getOrCreateController(category);
+    controller.removeListener(_onScroll);
+    controller.addListener(_onScroll);
+    _attachedCategory = category;
+  }
+
   void _onScroll() {
-    if (!scrollController.hasClients) return;
-    final position = scrollController.position;
+    final controller = scrollController;
+    if (!controller.hasClients) return;
+    final position = controller.position;
     const preloadDistance = 800.0;
     if (position.pixels >= position.maxScrollExtent - preloadDistance) {
       if (state.hasMore && !state.isLoadingMore) {
@@ -204,8 +225,10 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
 
   @override
   void dispose() {
-    scrollController.removeListener(_onScroll);
-    scrollController.dispose();
+    for (final entry in _controllers.entries) {
+      entry.value.removeListener(_onScroll);
+      entry.value.dispose();
+    }
     _selectionController.dispose();
     super.dispose();
   }
