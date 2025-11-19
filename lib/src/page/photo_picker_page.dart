@@ -30,6 +30,7 @@ class PhotoPickerPage extends ConsumerStatefulWidget {
 class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     with TickerProviderStateMixin {
   bool _isAlbumSheetOpen = false;
+
   // late final TabController _tabController;
 
   @override
@@ -180,17 +181,17 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
 
     if (!widget.config.showOriginalToggle) {
       return Container(
-        padding: EdgeInsets.only(bottom: paddingBottom + 16),
+        padding: EdgeInsets.only(bottom: paddingBottom + config.spacing.lg),
         child: Center(
           child: YTapped(
             onTap: () => notifier.confirm(context),
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: config.spacing.lg,
-                vertical: config.spacing.sm,
+                horizontal: config.spacing.xl,
+                vertical: config.spacing.md,
               ),
               decoration: BoxDecoration(
-                color: config.colors.onBackground.withValues(alpha: 0.8),
+                color: config.colors.primary,
                 borderRadius: config.radius.borderFull,
               ),
               child: Row(
@@ -483,7 +484,10 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
   ) {
     final config = YuniWidgetConfig.instance;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment:
+          (!DeviceTypeUtil.instance.isMobile)
+              ? MainAxisAlignment.spaceAround
+              : MainAxisAlignment.start,
       spacing: 10,
       children: [
         ...map.map(
@@ -502,17 +506,17 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
                           : config.colors.background,
                   borderRadius: config.radius.borderFull,
                 ),
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(
+                  vertical: config.spacing.sm + config.spacing.xxs,
+                ),
                 child: YText(
                   getCateText(el),
                   style:
                       status.currentCategory == el
                           ? config.textStyles.labelLargeBold.copyWith(
-                            height: 1,
                             color: config.colors.onPrimary,
                           )
                           : config.textStyles.labelLargeRegular.copyWith(
-                            height: 1,
                             color: config.colors.onBackground,
                           ),
                 ),
