@@ -36,7 +36,8 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     return _controllers.putIfAbsent(category, () => ScrollController());
   }
 
-  ScrollController get scrollController => _getOrCreateController(state.currentCategory);
+  ScrollController get scrollController =>
+      _getOrCreateController(state.currentCategory);
 
   // 获取选择控制器
   DragSelectionController get selectionController => _selectionController;
@@ -543,6 +544,9 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     if (_recalculatingSize) return;
     _recalculatingSize = true;
     Future(() async {
+      if (!mounted) {
+        return;
+      }
       try {
         final total = await _recalculateSelectedSize();
         state = state.copyWith(totalSelectedSize: total);
