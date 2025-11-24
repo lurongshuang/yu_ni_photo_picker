@@ -1,6 +1,6 @@
 name: yu_ni_photo_picker
 description: "Yu Ni Photo Picker - A Flutter plugin for photo selection"
-version: 1.0.3
+version: 1.0.5
 homepage: https://github.com/lurongshuang/yu_ni_photo_picker
 repository: https://github.com/lurongshuang/yu_ni_photo_picker
 issue_tracker: https://github.com/lurongshuang/yu_ni_photo_picker/issues
@@ -18,7 +18,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  yuni_widget: ^0.0.6
+  yuni_widget: ^0.1.0
   flutter_riverpod: ^2.6.1
   photo_manager: ^3.7.1
   image_picker: ^1.2.0

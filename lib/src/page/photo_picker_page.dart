@@ -473,8 +473,8 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
 
   final map = [
     AssetCategory.all,
-    AssetCategory.video,
     AssetCategory.image,
+    AssetCategory.video,
     AssetCategory.live,
   ];
 
@@ -534,7 +534,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
   }
 
   String getCateText(AssetCategory el) {
-    final tabs = const ['全部', '视频', '照片', '实况图'];
+    final tabs = const ['全部', '照片', '视频', '实况图'];
 
     return tabs[el.index];
   }

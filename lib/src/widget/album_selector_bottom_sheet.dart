@@ -11,7 +11,7 @@ import 'package:yuni_widget/yuni_widget.dart';
 import '../constants/constants.dart';
 
 ///切换相册
-class AlbumSelectorBottomSheet extends StatelessWidget {
+class AlbumSelectorBottomSheet extends StatefulWidget {
   final List<AssetPathEntity> albums;
   final AssetPathEntity? currentAlbum;
   final Function(AssetPathEntity) onAlbumSelected;
@@ -22,6 +22,36 @@ class AlbumSelectorBottomSheet extends StatelessWidget {
     required this.currentAlbum,
     required this.onAlbumSelected,
   });
+
+  @override
+  State<AlbumSelectorBottomSheet> createState() =>
+      _AlbumSelectorBottomSheetState();
+}
+
+class _AlbumSelectorBottomSheetState extends State<AlbumSelectorBottomSheet> {
+  final ScrollController itemScrollController = ScrollController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      int index = 0;
+      if (widget.currentAlbum != null) {
+        index = widget.albums.indexWhere(
+          (el) => el.id == widget.currentAlbum?.id,
+        );
+        if (index < 0) {
+          index = 0;
+        }
+      }
+      double itemHeight = 60 + 16;
+      itemScrollController.animateTo(
+        index * itemHeight,
+        duration: Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +111,15 @@ class AlbumSelectorBottomSheet extends StatelessWidget {
                 Flexible(
                   child: ListView.separated(
                     shrinkWrap: true,
-                    itemCount: albums.length,
+                    itemCount: widget.albums.length,
+                    controller: itemScrollController,
                     itemBuilder: (context, index) {
-                      final album = albums[index];
-                      final isSelected = currentAlbum?.id == album.id;
+                      final album = widget.albums[index];
+                      final isSelected = widget.currentAlbum?.id == album.id;
                       final config = YuniWidgetConfig.instance;
                       return YTapped(
                         onTap: () {
-                          onAlbumSelected(album);
+                          widget.onAlbumSelected(album);
                           Navigator.pop(context);
                         },
                         child: Container(
@@ -215,4 +246,3 @@ class AlbumSelectorBottomSheet extends StatelessWidget {
     return assets.isNotEmpty ? assets.first : null;
   }
 }
-

@@ -4,8 +4,8 @@ import '../utils/page_status.dart';
 
 enum AssetCategory {
   all,
-  video,
   image,
+  video,
   live,
 }
 

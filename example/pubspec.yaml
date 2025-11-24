@@ -31,7 +31,7 @@ dependencies:
   
   # 添加必要的依赖
   flutter_riverpod: ^2.6.1
-  yuni_widget: ^0.0.6
+  yuni_widget: ^0.1.0
   photo_manager: ^3.7.1
   flutter_screenutil: ^5.9.3
 

@@ -738,15 +738,15 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.1"
+    version: "1.0.5"
   yuni_widget:
     dependency: "direct main"
     description:
       name: yuni_widget
-      sha256: "84ce5c8dae0b4170bcc30ef354f378fb9ac7c529f426a1e38c508bc2bdf39549"
+      sha256: "013fd712ffc9d7382a276f78da518ce9973140dee33d6e872d4a6e27fe3b35c0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.6"
+    version: "0.1.0"
 sdks:
   dart: ">=3.7.2 <4.0.0"
   flutter: ">=3.29.0"
