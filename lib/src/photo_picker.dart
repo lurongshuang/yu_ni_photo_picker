@@ -16,6 +16,7 @@ class PhotoPicker {
     // bool orderAsc = false,
     // bool showPreviewButton = false,
     bool showOriginalToggle = false,
+    bool showLocationToggle = false,
     String confirmButtonText = '上传',
   }) async {
     return Navigator.push<PhotoPickerFile?>(
@@ -33,6 +34,7 @@ class PhotoPicker {
                 // orderAsc: orderAsc,
                 // showPreviewButton: showPreviewButton,
                 showOriginalToggle: showOriginalToggle,
+                showLocationToggle: showLocationToggle,
                 confirmButtonText: confirmButtonText,
               ),
             ),
@@ -52,6 +54,7 @@ class PhotoPicker {
     int maxAssets = 5000,
     // bool showPreviewButton = false,
     bool showOriginalToggle = false,
+    bool showLocationToggle = false,
     String confirmButtonText = '上传',
   }) async {
     final result = await Navigator.push<List<PhotoPickerFile>>(
@@ -70,6 +73,7 @@ class PhotoPicker {
                 maxAssets: maxAssets,
                 // showPreviewButton: showPreviewButton,
                 showOriginalToggle: showOriginalToggle,
+                showLocationToggle: showLocationToggle,
                 confirmButtonText: confirmButtonText,
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:motion_photos/motion_photos.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
 
 import '../config/picker_file.dart';
 
@@ -116,21 +117,16 @@ class PhotoPickerService {
         mediaUrl = await entity.getMediaUrl();
       }
     } else if (Platform.isAndroid && entity.type == AssetType.image) {
-      final MotionPhotos motionPhotos = MotionPhotos(file.path);
-      final isMotionPhoto = await motionPhotos.isMotionPhoto();
-      isLivePhoto = isMotionPhoto;
-      if (isLivePhoto) {
-        final outputDir = await _createOutputDirectory();
-        final motionVideoFile = await motionPhotos.getMotionVideoFile(
-          outputDir,
-          fileName: "${originFileName}_motion_photos",
-        );
-        if (motionVideoFile.existsSync()) {
-          mediaUrl = motionVideoFile.path;
-        } else {
-          isLivePhoto = false;
-        }
-      }
+      // 在 Android 端，使用 Isolate 处理动态照片提取，避免阻塞 UI 线程导致动画卡顿
+      final outputDir = await _createOutputDirectory();
+      final result = await compute(_extractMotionPhotoWorker, {
+        'filePath': file.path,
+        'outputDirPath': outputDir.path,
+        'originFileName': originFileName,
+      });
+
+      isLivePhoto = result['isLivePhoto'] ?? false;
+      mediaUrl = result['mediaUrl'];
     }
 
     return PhotoPickerFile(
@@ -139,6 +135,32 @@ class PhotoPickerService {
       mediaUrl: mediaUrl,
       fileName: originFileName,
     );
+  }
+
+  /// 仅用于 Isolate 处理 Android 动态照片提取的 worker 方法
+  static Future<Map<String, dynamic>> _extractMotionPhotoWorker(
+    Map<String, dynamic> params,
+  ) async {
+    final String filePath = params['filePath'];
+    final String outputDirPath = params['outputDirPath'];
+    final String originFileName = params['originFileName'];
+
+    final MotionPhotos motionPhotos = MotionPhotos(filePath);
+    final isMotionPhoto = await motionPhotos.isMotionPhoto();
+    if (!isMotionPhoto) {
+      return {'isLivePhoto': false};
+    }
+
+    final outputDir = Directory(outputDirPath);
+    final motionVideoFile = await motionPhotos.getMotionVideoFile(
+      outputDir,
+      fileName: "${originFileName}_motion_photos",
+    );
+
+    if (motionVideoFile.existsSync()) {
+      return {'isLivePhoto': true, 'mediaUrl': motionVideoFile.path};
+    }
+    return {'isLivePhoto': false};
   }
 
   /// 缩略图缓存

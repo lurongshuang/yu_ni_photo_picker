@@ -109,12 +109,42 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
   Widget build(BuildContext context) {
     final state = ref.watch(photoViewerProvider(_config));
     final notifier = ref.read(photoViewerProvider(_config).notifier);
+    final pickerStatus = ref.watch(photoPickerProvider(widget.pickerConfig));
 
     return Scaffold(
       backgroundColor: YuniWidgetConfig.instance.colors.onSurface,
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(context, state, notifier),
-      body: _buildBody(context, state, notifier),
+      body: Stack(
+        children: [
+          _buildBody(context, state, notifier),
+          if (pickerStatus.isProcessing)
+            Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const YLoading(),
+                      YSpacing.heightMd(),
+                      YText(
+                        '正在处理中...',
+                        style: YuniWidgetConfig.instance.textStyles.bodyMediumBold
+                            .copyWith(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -336,7 +366,7 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
     state,
   ) {
     final paddingBottom = MediaQuery.of(context).padding.bottom;
-    final config = YuniWidgetConfig.instance;
+    // final config = YuniWidgetConfig.instance;
 
     return Container(
       padding: EdgeInsets.only(
@@ -348,22 +378,62 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
       alignment: Alignment.center,
       child: Row(
         children: [
-          if (widget.pickerConfig.showOriginalToggle &&
+          if ((widget.pickerConfig.showOriginalToggle ||
+                  widget.pickerConfig.showLocationToggle) &&
               state.totalSelectedCount > 0)
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: _buildOriginalToggle(pickerState, pickerNotifier),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (widget.pickerConfig.showOriginalToggle)
+                        _buildOriginalToggle(pickerState, pickerNotifier),
+                      if (widget.pickerConfig.showOriginalToggle &&
+                          widget.pickerConfig.showLocationToggle)
+                        YSpacing.widthMd(),
+                      if (widget.pickerConfig.showLocationToggle)
+                        _buildLocationToggle(pickerState, pickerNotifier),
+                    ],
+                  ),
+                ),
               ),
             ),
           if (state.totalSelectedCount > 0)
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: _buildSendButton(notifier, state),
-              ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: _buildSendButton(notifier, state),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLocationToggle(
+    PhotoPickerState pickerState,
+    PhotoPickerNotifier pickerNotifier,
+  ) {
+    final config = YuniWidgetConfig.instance;
+    return YTapped(
+      onTap: pickerNotifier.toggleSendLocation,
+      child: Container(
+        color: Colors.transparent,
+        padding: EdgeInsets.symmetric(horizontal: config.spacing.md),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioIconWidget(selected: pickerState.sendLocation, size: 20),
+            YSpacing.widthSm(),
+            YText(
+              '位置信息',
+              style: config.textStyles.bodyMediumBold.copyWith(
+                color: config.colors.onInfo,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -431,27 +501,30 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
     final sizeText = _formatBytes(pickerState.totalSelectedSize);
     return YTapped(
       onTap: pickerNotifier.toggleSendOriginal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RadioIconWidget(selected: pickerState.sendOriginal, size: 20),
-          YSpacing.widthSm(),
-          YText(
-            '原图',
-            style: config.textStyles.bodyMediumBold.copyWith(
-              color: config.colors.onInfo,
-            ),
-          ),
-          if (pickerState.sendOriginal) ...[
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioIconWidget(selected: pickerState.sendOriginal, size: 20),
             YSpacing.widthSm(),
             YText(
-              sizeText,
-              style: config.textStyles.bodySmallRegular.copyWith(
+              '原图',
+              style: config.textStyles.bodyMediumBold.copyWith(
                 color: config.colors.onInfo,
               ),
             ),
+            if (pickerState.sendOriginal) ...[
+              YSpacing.widthSm(),
+              YText(
+                sizeText,
+                style: config.textStyles.bodySmallRegular.copyWith(
+                  color: config.colors.onInfo,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

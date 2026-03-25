@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=/Users/lurongshuang/Documents/flutter_sdk/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/lurongshuang/Documents/AndroidStudioProjects/photos-app/plugins/yu_ni_photo_picker/example"
+export "FLUTTER_APPLICATION_PATH=/Users/lurongshuang/Downloads/yu_ni_photo_picker/example"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"

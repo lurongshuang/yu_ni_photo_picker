@@ -228,6 +228,7 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
   int _paramMaxAssets = 9;
   bool _paramShowPreview = true;
   bool _paramShowOriginal = true;
+  bool _paramShowLocation = true;
   String _paramConfirmText = '上传';
 
   @override
@@ -665,6 +666,31 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        (file.sendLocation
+                            ? Colors.blue.shade100
+                            : Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '位置信息: ${file.sendLocation ? '是' : '否'}',
+                    style: TextStyle(
+                      color:
+                          file.sendLocation
+                              ? Colors.blue.shade800
+                              : Colors.grey.shade700,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -854,6 +880,14 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
+                Expanded(
+                  child: SwitchListTile(
+                    title: const Text('显示位置开关'),
+                    value: _paramShowLocation,
+                    onChanged: (v) => setState(() => _paramShowLocation = v),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
               ],
             ),
             TextField(
@@ -887,6 +921,7 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         // orderAsc: _paramOrderAsc,
         // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
+        showLocationToggle: _paramShowLocation,
         confirmButtonText: _paramConfirmText,
       );
 
@@ -925,6 +960,7 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         maxAssets: _paramMaxAssets,
         // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
+        showLocationToggle: _paramShowLocation,
         confirmButtonText: _paramConfirmText,
       );
 

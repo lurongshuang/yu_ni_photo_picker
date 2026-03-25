@@ -34,6 +34,8 @@ class PhotoPickerState extends BaseState<PhotoPickerState> {
   final bool? dragStartSelectState;
   final int lastDragIndex;
   final bool sendOriginal;
+  final bool sendLocation;
+  final bool isProcessing;
   final int totalSelectedSize;
   final AssetCategory currentCategory;
   final Map<String, bool> liveVideoUploadMap;
@@ -58,6 +60,8 @@ class PhotoPickerState extends BaseState<PhotoPickerState> {
     this.dragStartSelectState,
     this.lastDragIndex = -1,
     this.sendOriginal = false,
+    this.sendLocation = false,
+    this.isProcessing = false,
     this.totalSelectedSize = 0,
     this.currentCategory = AssetCategory.all,
     this.liveVideoUploadMap = const {},
@@ -84,6 +88,8 @@ class PhotoPickerState extends BaseState<PhotoPickerState> {
     bool? dragStartSelectState,
     int? lastDragIndex,
     bool? sendOriginal,
+    bool? sendLocation,
+    bool? isProcessing,
     int? totalSelectedSize,
     AssetCategory? currentCategory,
     Map<String, bool>? liveVideoUploadMap,
@@ -108,6 +114,8 @@ class PhotoPickerState extends BaseState<PhotoPickerState> {
        dragStartSelectState: dragStartSelectState ?? this.dragStartSelectState,
        lastDragIndex: lastDragIndex ?? this.lastDragIndex,
        sendOriginal: sendOriginal ?? this.sendOriginal,
+       sendLocation: sendLocation ?? this.sendLocation,
+       isProcessing: isProcessing ?? this.isProcessing,
        totalSelectedSize: totalSelectedSize ?? this.totalSelectedSize,
        currentCategory: currentCategory ?? this.currentCategory,
        liveVideoUploadMap: liveVideoUploadMap ?? this.liveVideoUploadMap,

@@ -134,6 +134,30 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
               bottom: 0,
               child: _buildBottomBar(status, notifier),
             ),
+          if (status.isProcessing)
+            Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const YLoading(),
+                      YSpacing.heightMd(),
+                      YText(
+                        '正在处理中...',
+                        style: config.textStyles.bodyMediumBold,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -179,7 +203,8 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
     //   );
     // }
 
-    if (!widget.config.showOriginalToggle) {
+    if (!widget.config.showOriginalToggle &&
+        !widget.config.showLocationToggle) {
       return Container(
         padding: EdgeInsets.only(bottom: paddingBottom + config.spacing.lg),
         child: Center(
@@ -229,108 +254,153 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
       alignment: Alignment.center,
       child: Row(
         children: [
-          if (widget.config.showOriginalToggle)
+          if (widget.config.showOriginalToggle ||
+              widget.config.showLocationToggle)
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: YTapped(
-                  onTap: notifier.toggleSendOriginal,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: config.spacing.md,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        RadioIconWidget(
-                          selected: status.sendOriginal,
-                          size: 20,
-                          color:
-                              status.sendOriginal
-                                  ? null
-                                  : config.colors.background,
-                        ),
-                        YSpacing.widthSm(),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: config.spacing.sm,
-                          ),
-                          child: YText(
-                            '原图',
-                            style: config.textStyles.bodyMediumBold.copyWith(
-                              height: 1,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (widget.config.showOriginalToggle)
+                        YTapped(
+                          onTap: notifier.toggleSendOriginal,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: config.spacing.md,
+                            ),
+                            color: Colors.transparent,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                RadioIconWidget(
+                                  selected: status.sendOriginal,
+                                  size: 20,
+                                  color:
+                                      status.sendOriginal
+                                          ? null
+                                          : config.colors.background,
+                                ),
+                                YSpacing.widthSm(),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: config.spacing.sm,
+                                  ),
+                                  child: YText(
+                                    '原图',
+                                    style: config.textStyles.bodyMediumBold
+                                        .copyWith(height: 1),
+                                  ),
+                                ),
+                                if (status.sendOriginal) ...[
+                                  YSpacing.widthSm(),
+                                  YText(
+                                    sizeText,
+                                    style: config.textStyles.bodySmallRegular
+                                        .copyWith(
+                                          color: config.colors.onSurface,
+                                          height: 1,
+                                        ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         ),
-                        if (status.sendOriginal) ...[
-                          YSpacing.widthSm(),
-                          YText(
-                            sizeText,
-                            style: config.textStyles.bodySmallRegular.copyWith(
-                              color: config.colors.onSurface,
-                              height: 1,
+                      if (widget.config.showLocationToggle)
+                        YTapped(
+                          onTap: notifier.toggleSendLocation,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: config.spacing.md,
+                            ),
+                            color: Colors.transparent,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                RadioIconWidget(
+                                  selected: status.sendLocation,
+                                  size: 20,
+                                  color:
+                                      status.sendLocation
+                                          ? null
+                                          : config.colors.background,
+                                ),
+                                YSpacing.widthSm(),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: config.spacing.sm,
+                                  ),
+                                  child: YText(
+                                    '位置信息',
+                                    style: config.textStyles.bodyMediumBold
+                                        .copyWith(height: 1),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: YTapped(
-                onTap: () => notifier.confirm(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: config.spacing.md,
-                    vertical: config.spacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: config.colors.primary,
-                    borderRadius: config.radius.borderFull,
-                    boxShadow: [
-                      BoxShadow(
-                        color: config.colors.onSurface.withValues(alpha: 0.1),
-                        blurRadius: config.spacing.lg,
-                        offset: Offset(0, 2),
+          Align(
+            alignment: Alignment.centerRight,
+            child: YTapped(
+              onTap: () => notifier.confirm(context),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: config.spacing.md,
+                  vertical: config.spacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: config.colors.primary,
+                  borderRadius: config.radius.borderFull,
+                  boxShadow: [
+                    BoxShadow(
+                      color: config.colors.onSurface.withValues(alpha: 0.1),
+                      blurRadius: config.spacing.lg,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    YText(
+                      widget.config.confirmButtonText,
+                      style: config.textStyles.bodyMediumBold.copyWith(
+                        color: config.colors.onPrimary,
+                        height: 1,
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      YText(
-                        widget.config.confirmButtonText,
-                        style: config.textStyles.bodyMediumBold.copyWith(
-                          color: config.colors.onPrimary,
-                          height: 1,
-                        ),
+                    ),
+                    YSpacing.widthSm(),
+                    Container(
+                      padding: EdgeInsets.all(config.spacing.sm),
+                      decoration: BoxDecoration(
+                        color: config.colors.primary,
+                        shape: BoxShape.circle,
                       ),
-                      YSpacing.widthSm(),
-                      Container(
-                        padding: EdgeInsets.all(config.spacing.sm),
-                        decoration: BoxDecoration(
-                          color: config.colors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: YText(
-                            '${status.selectedCount}',
-                            style: config.textStyles.bodySmallBold.copyWith(
-                              color: config.colors.onPrimary,
-                              height: 1,
-                            ),
+                      child: Center(
+                        child: YText(
+                          '${status.selectedCount}',
+                          style: config.textStyles.bodySmallBold.copyWith(
+                            color: config.colors.onPrimary,
+                            height: 1,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

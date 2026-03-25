@@ -6,6 +6,7 @@ class PhotoPickerFile {
   bool isLivePhoto;
   String? mediaUrl;
   bool sendOriginal;
+  bool sendLocation;
   bool sendLiveVideo;
 
   PhotoPickerFile({
@@ -14,6 +15,7 @@ class PhotoPickerFile {
     this.isLivePhoto = false,
     this.mediaUrl,
     this.sendOriginal = false,
+    this.sendLocation = false,
     this.sendLiveVideo = false,
   });
 }

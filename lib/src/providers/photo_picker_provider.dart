@@ -540,6 +540,10 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
     state = state.copyWith(sendOriginal: !state.sendOriginal);
   }
 
+  void toggleSendLocation() {
+    state = state.copyWith(sendLocation: !state.sendLocation);
+  }
+
   void _scheduleRecalculateSelectedSize() {
     if (_recalculatingSize) return;
     _recalculatingSize = true;
@@ -605,43 +609,69 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
   int get selectedCount => state.globalSelectedAssets.length;
 
   Future<dynamic> confirm(BuildContext context) async {
-    if (config.allowMultiple) {
-      final selectedAssets = List<AssetEntity>.from(state.globalSelectedAssets);
-      final files = await Future.wait(
-        selectedAssets.map(PhotoPickerService.toPhotoPickerFile),
-      );
-      if (!context.mounted) {
-        return;
-      }
-      final list = files.whereType<PhotoPickerFile>().toList();
-      for (int i = 0; i < list.length; i++) {
-        final f = list[i];
-        f.sendOriginal = state.sendOriginal;
-        final asset = selectedAssets[i];
-        final toggle = state.liveVideoUploadMap[asset.id];
-        if (f.isLivePhoto) {
-          f.sendLiveVideo = toggle ?? true;
-        } else {
-          f.sendLiveVideo = false;
+    if (state.isProcessing) return;
+
+    state = state.copyWith(isProcessing: true);
+    try {
+      if (config.allowMultiple) {
+        final selectedAssets =
+            List<AssetEntity>.from(state.globalSelectedAssets);
+        final List<PhotoPickerFile?> files = [];
+
+        // 采用分批处理，避免大量文件同时进行 IO 和视频提取导致内存或线程耗尽
+        const int batchSize = 3;
+        for (int i = 0; i < selectedAssets.length; i += batchSize) {
+          final end =
+              (i + batchSize < selectedAssets.length)
+                  ? i + batchSize
+                  : selectedAssets.length;
+          final batch = selectedAssets.sublist(i, end);
+          final batchResults = await Future.wait(
+            batch.map(PhotoPickerService.toPhotoPickerFile),
+          );
+          files.addAll(batchResults);
         }
-      }
-      return Navigator.pop(context, list);
-    } else {
-      final asset = state.globalSelectedAssets.first;
-      final file = await PhotoPickerService.toPhotoPickerFile(asset);
-      if (!context.mounted) {
-        return;
-      }
-      if (file != null) {
-        file.sendOriginal = state.sendOriginal;
-        final toggle = state.liveVideoUploadMap[asset.id];
-        if (file.isLivePhoto) {
-          file.sendLiveVideo = toggle ?? true;
-        } else {
-          file.sendLiveVideo = false;
+
+        if (!context.mounted) {
+          return;
         }
+        final list = files.whereType<PhotoPickerFile>().toList();
+        for (int i = 0; i < list.length; i++) {
+          final f = list[i];
+          f.sendOriginal = state.sendOriginal;
+          f.sendLocation = state.sendLocation;
+          final asset = selectedAssets[i];
+          final toggle = state.liveVideoUploadMap[asset.id];
+          if (f.isLivePhoto) {
+            f.sendLiveVideo = toggle ?? true;
+          } else {
+            f.sendLiveVideo = false;
+          }
+        }
+        return Navigator.pop(context, list);
+      } else {
+        final asset = state.globalSelectedAssets.first;
+        final file = await PhotoPickerService.toPhotoPickerFile(asset);
+        if (!context.mounted) {
+          return;
+        }
+        if (file != null) {
+          file.sendOriginal = state.sendOriginal;
+          file.sendLocation = state.sendLocation;
+          final toggle = state.liveVideoUploadMap[asset.id];
+          if (file.isLivePhoto) {
+            file.sendLiveVideo = toggle ?? true;
+          } else {
+            file.sendLiveVideo = false;
+          }
+        }
+        return Navigator.pop(context, file);
       }
-      return Navigator.pop(context, file);
+    } catch (e) {
+      debugPrint("PhotoPicker confirm error: $e");
+      YToastHelper.toast("处理失败，请重试");
+    } finally {
+      state = state.copyWith(isProcessing: false);
     }
   }
 

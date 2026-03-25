@@ -31,6 +31,9 @@ class PhotoPickerConfig {
   /// 是否显示原图开关
   final bool showOriginalToggle;
 
+  /// 是否显示位置信息开关
+  final bool showLocationToggle;
+
   /// 确认按钮文本
   final String confirmButtonText;
 
@@ -45,6 +48,7 @@ class PhotoPickerConfig {
     this.enableCategoryTabs = false,
     // this.showPreviewButton = false,
     this.showOriginalToggle = false,
+    this.showLocationToggle = false,
     this.confirmButtonText = '上传',
   });
 }
