@@ -8,7 +8,7 @@
 
 ```yaml
 dependencies:
-  yu_ni_photo_picker: ^0.0.1
+  yu_ni_photo_picker: ^1.0.7
 ```
 
 
@@ -86,10 +86,10 @@ Future<PhotoPickerFile?> pickSingle({
   bool groupByDate = false,
   bool groupByMonth = false,
   bool enableCategoryTabs = false,
-  OrderOptionType orderBy = OrderOptionType.createDate,
-  bool orderAsc = false,
-  bool showPreviewButton = false,
+  bool enableBlurHash = false,
+  int blurHashSize = 32,
   bool showOriginalToggle = false,
+  bool showLocationToggle = false,
   String confirmButtonText = '上传',
 })
 ```
@@ -99,10 +99,10 @@ Future<PhotoPickerFile?> pickSingle({
 - `groupByDate`：是否按日期分组显示。
 - `groupByMonth`：是否按月份分组（在 `groupByDate=true` 时生效）。
 - `enableCategoryTabs`：顶部启用多分类 Tab（图片/视频）。
-- `orderBy`：排序字段，默认按创建时间。
-- `orderAsc`：升序或降序，默认降序。
-- `showPreviewButton`：是否显示预览入口。
+- `enableBlurHash`：是否启用 BlurHash 生成。
+- `blurHashSize`：BlurHash 缩略图尺寸，默认 32。
 - `showOriginalToggle`：是否显示原图开关。
+- `showLocationToggle`：是否显示位置信息开关。
 - `confirmButtonText`：确认按钮文案，默认“上传”。
 
 返回 `PhotoPickerFile?`，为空表示用户取消。
@@ -116,11 +116,11 @@ Future<List<PhotoPickerFile>> pickMultiple({
   bool groupByDate = false,
   bool groupByMonth = false,
   bool enableCategoryTabs = false,
-  OrderOptionType orderBy = OrderOptionType.createDate,
-  bool orderAsc = false,
+  bool enableBlurHash = false,
+  int blurHashSize = 32,
   int maxAssets = 5000,
-  bool showPreviewButton = false,
   bool showOriginalToggle = false,
+  bool showLocationToggle = false,
   String confirmButtonText = '上传',
 })
 ```
@@ -134,12 +134,15 @@ Future<List<PhotoPickerFile>> pickMultiple({
 
 ```dart
 class PhotoPickerFile {
-  XFile? xFile;        // 原始文件（图片或视频）
-  String fileName;     // 原文件名
-  bool isLivePhoto;    // 是否 Live/Motion Photo
-  String? mediaUrl;    // Live/Motion 对应的视频路径（如有）
-  bool sendOriginal;   // 是否选择“原图”
-  bool sendLiveVideo;  // 是否同时发送 Live Video
+  XFile? xFile;             // 原始文件（图片或视频）
+  String fileName;          // 原文件名
+  bool isLivePhoto;         // 是否 Live/Motion Photo
+  String? mediaUrl;         // Live/Motion 对应的视频路径（如有）
+  bool sendOriginal;        // 是否选择“原图”
+  bool sendLocation;        // 是否选择“包含位置信息”
+  bool sendLiveVideo;       // 是否同时发送 Live Video
+  String? blurHash;         // 生成的 BlurHash 字符串
+  BlurhashFfiImage? blurHashImage; // 生成的 BlurHash 图片对象
 }
 ```
 
@@ -156,11 +159,11 @@ final files = await PhotoPicker.pickMultiple(
   groupByDate: true,
   groupByMonth: true,
   enableCategoryTabs: true,
-  orderBy: OrderOptionType.createDate,
-  orderAsc: false,
+  enableBlurHash: true,
+  blurHashSize: 32,
   maxAssets: 9,
-  showPreviewButton: true,
   showOriginalToggle: true,
+  showLocationToggle: true,
   confirmButtonText: '上传',
 );
 ```
