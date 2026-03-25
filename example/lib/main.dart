@@ -229,6 +229,8 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
   bool _paramShowPreview = true;
   bool _paramShowOriginal = true;
   bool _paramShowLocation = true;
+  bool _paramEnableBlurHash = false;
+  int _paramBlurHashSize = 32;
   String _paramConfirmText = '上传';
 
   @override
@@ -693,6 +695,56 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                 ),
               ],
             ),
+            if (file.blurHash != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'BlurHash:',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            file.blurHash!,
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (file.blurHashImage != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Image(
+                            image: file.blurHashImage!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -890,6 +942,30 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
                 ),
               ],
             ),
+            SwitchListTile(
+              title: const Text('生成 BlurHash (针对图片)'),
+              value: _paramEnableBlurHash,
+              onChanged: (v) => setState(() => _paramEnableBlurHash = v),
+              contentPadding: EdgeInsets.zero,
+            ),
+            if (_paramEnableBlurHash)
+              Row(
+                children: [
+                  const Text('BlurHash 尺寸'),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Slider(
+                      value: _paramBlurHashSize.toDouble(),
+                      min: 16,
+                      max: 128,
+                      divisions: 7, // 16, 32, 48, 64, 80, 96, 112, 128
+                      label: '$_paramBlurHashSize',
+                      onChanged:
+                          (v) => setState(() => _paramBlurHashSize = v.round()),
+                    ),
+                  ),
+                ],
+              ),
             TextField(
               decoration: const InputDecoration(
                 labelText: '确认按钮文本',
@@ -918,10 +994,10 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         groupByDate: _paramGroupByDate,
         groupByMonth: _paramGroupByMonth,
         enableCategoryTabs: _paramEnableCategoryTabs,
-        // orderAsc: _paramOrderAsc,
-        // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
         showLocationToggle: _paramShowLocation,
+        enableBlurHash: _paramEnableBlurHash,
+        blurHashSize: _paramBlurHashSize,
         confirmButtonText: _paramConfirmText,
       );
 
@@ -956,11 +1032,11 @@ class _PhotoPickerExampleState extends State<PhotoPickerExample> {
         groupByDate: _paramGroupByDate,
         groupByMonth: _paramGroupByMonth,
         enableCategoryTabs: _paramEnableCategoryTabs,
-        // orderAsc: _paramOrderAsc,
         maxAssets: _paramMaxAssets,
-        // showPreviewButton: _paramShowPreview,
         showOriginalToggle: _paramShowOriginal,
         showLocationToggle: _paramShowLocation,
+        enableBlurHash: _paramEnableBlurHash,
+        blurHashSize: _paramBlurHashSize,
         confirmButtonText: _paramConfirmText,
       );
 

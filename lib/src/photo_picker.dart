@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+export 'package:blurhash_ffi/blurhash_ffi.dart' show BlurhashFfiImage;
 import 'config/picker_file.dart';
 import 'config/photo_picker_config.dart';
 import 'page/photo_picker_page.dart';
@@ -17,6 +18,8 @@ class PhotoPicker {
     // bool showPreviewButton = false,
     bool showOriginalToggle = false,
     bool showLocationToggle = false,
+    bool enableBlurHash = false,
+    int blurHashSize = 32,
     String confirmButtonText = '上传',
   }) async {
     return Navigator.push<PhotoPickerFile?>(
@@ -35,6 +38,8 @@ class PhotoPicker {
                 // showPreviewButton: showPreviewButton,
                 showOriginalToggle: showOriginalToggle,
                 showLocationToggle: showLocationToggle,
+                enableBlurHash: enableBlurHash,
+                blurHashSize: blurHashSize,
                 confirmButtonText: confirmButtonText,
               ),
             ),
@@ -55,6 +60,8 @@ class PhotoPicker {
     // bool showPreviewButton = false,
     bool showOriginalToggle = false,
     bool showLocationToggle = false,
+    bool enableBlurHash = false,
+    int blurHashSize = 32,
     String confirmButtonText = '上传',
   }) async {
     final result = await Navigator.push<List<PhotoPickerFile>>(
@@ -74,6 +81,8 @@ class PhotoPicker {
                 // showPreviewButton: showPreviewButton,
                 showOriginalToggle: showOriginalToggle,
                 showLocationToggle: showLocationToggle,
+                enableBlurHash: enableBlurHash,
+                blurHashSize: blurHashSize,
                 confirmButtonText: confirmButtonText,
               ),
             ),

@@ -34,6 +34,12 @@ class PhotoPickerConfig {
   /// 是否显示位置信息开关
   final bool showLocationToggle;
 
+  /// 是否启用 BlurHash
+  final bool enableBlurHash;
+
+  /// BlurHash 缩略图尺寸
+  final int blurHashSize;
+
   /// 确认按钮文本
   final String confirmButtonText;
 
@@ -49,6 +55,8 @@ class PhotoPickerConfig {
     // this.showPreviewButton = false,
     this.showOriginalToggle = false,
     this.showLocationToggle = false,
-    this.confirmButtonText = '上传',
+    this.enableBlurHash = false,
+    this.blurHashSize = 32,
+    this.confirmButtonText = '确认',
   });
 }

@@ -1,0 +1,73 @@
+PODS:
+  - blurhash_ffi (0.0.1):
+    - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - image_picker_ios (0.0.1):
+    - Flutter
+  - integration_test (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - photo_manager (3.9.0):
+    - Flutter
+    - FlutterMacOS
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - yu_ni_photo_picker (0.0.1):
+    - Flutter
+  - yuni_widget (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - blurhash_ffi (from `.symlinks/plugins/blurhash_ffi/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - Flutter (from `Flutter`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - photo_manager (from `.symlinks/plugins/photo_manager/darwin`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - yu_ni_photo_picker (from `.symlinks/plugins/yu_ni_photo_picker/ios`)
+  - yuni_widget (from `.symlinks/plugins/yuni_widget/ios`)
+
+EXTERNAL SOURCES:
+  blurhash_ffi:
+    :path: ".symlinks/plugins/blurhash_ffi/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  Flutter:
+    :path: Flutter
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  photo_manager:
+    :path: ".symlinks/plugins/photo_manager/darwin"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  yu_ni_photo_picker:
+    :path: ".symlinks/plugins/yu_ni_photo_picker/ios"
+  yuni_widget:
+    :path: ".symlinks/plugins/yuni_widget/ios"
+
+SPEC CHECKSUMS:
+  blurhash_ffi: 4831b96320d4273876c9a2fd3f7d50b8a3a53509
+  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  photo_manager: d8a1055c2d3ee24fc300461c66e0defdec58b3d6
+  video_player_avfoundation: 7993f492ae0bd77edaea24d9dc051d8bb2cd7c86
+  yu_ni_photo_picker: 83ae3d6a4ef8f79a4fdfe9d5d28f675b1f97f7ae
+  yuni_widget: d2d395b9ca6605721b1482977ecd03468a2e4fa2
+
+PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1
+
+COCOAPODS: 1.16.2

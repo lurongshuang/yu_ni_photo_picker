@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:motion_photos/motion_photos.dart';
@@ -6,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:blurhash_ffi/blurhash_ffi.dart' as blurhash;
 
 import '../config/picker_file.dart';
 
@@ -76,9 +79,10 @@ class PhotoPickerService {
 
   /// 将 AssetEntity 转为 XFile（原图/原视频）
   static Future<XFile?> toXFile(AssetEntity entity) async {
-    final file = await entity.originFile.catchError((el) {
-      return null;
-    });
+    File? file = await entity.originFile.catchError((el) => null);
+    file ??= await entity.file.catchError((el) => null);
+    file ??= await _getThumbnailFile(entity);
+
     if (file == null) return null;
 
     ///原文件名
@@ -100,10 +104,15 @@ class PhotoPickerService {
   }
 
   /// 将 AssetEntity 转为 PhotoPickerFile（原图/原视频）
-  static Future<PhotoPickerFile?> toPhotoPickerFile(AssetEntity entity) async {
-    final file = await entity.originFile.catchError((el) {
-      return null;
-    });
+  static Future<PhotoPickerFile?> toPhotoPickerFile(
+    AssetEntity entity, {
+    bool enableBlurHash = false,
+    int blurHashSize = 32,
+  }) async {
+    File? file = await entity.originFile.catchError((el) => null);
+    file ??= await entity.file.catchError((el) => null);
+    file ??= await _getThumbnailFile(entity);
+
     if (file == null) return null;
     String? mediaUrl;
     bool isLivePhoto = entity.isLivePhoto;
@@ -129,12 +138,51 @@ class PhotoPickerService {
       mediaUrl = result['mediaUrl'];
     }
 
+    String? blurHash;
+    if (enableBlurHash && entity.type == AssetType.image) {
+      try {
+        // 使用指定的尺寸生成缩略图供 BlurHash 使用
+        final thumbData = await entity.thumbnailDataWithSize(
+          ThumbnailSize(blurHashSize, blurHashSize),
+        );
+        if (thumbData != null) {
+          blurHash = await blurhash.BlurhashFFI.encode(MemoryImage(thumbData));
+        }
+      } catch (e) {
+        debugPrint("BlurHash generation failed: $e");
+      }
+    }
+
     return PhotoPickerFile(
       xFile: XFile(file.path, name: originFileName, mimeType: mimeType),
       isLivePhoto: isLivePhoto,
       mediaUrl: mediaUrl,
       fileName: originFileName,
+      blurHash: blurHash,
+      blurHashImage:
+          blurHash != null ? blurhash.BlurhashFfiImage(blurHash) : null,
     );
+  }
+
+  /// 获取缩略图文件（作为备选方案）
+  static Future<File?> _getThumbnailFile(AssetEntity entity) async {
+    try {
+      final thumbData = await entity.thumbnailData;
+      if (thumbData == null) return null;
+
+      final outputDir = await _createOutputDirectory();
+      // 在 iOS 等平台上，entity.id 可能包含 "/"，需要替换为 "_" 以防止被误认为目录名
+      final safeId = entity.id.replaceAll('/', '_').replaceAll(':', '_');
+      final thumbFile = File('${outputDir.path}/thumb_$safeId.jpg');
+
+      if (!await thumbFile.exists()) {
+        await thumbFile.writeAsBytes(thumbData);
+      }
+      return thumbFile;
+    } catch (e) {
+      debugPrint("Failed to get thumbnail file for ${entity.id}: $e");
+      return null;
+    }
   }
 
   /// 仅用于 Isolate 处理 Android 动态照片提取的 worker 方法
@@ -196,4 +244,3 @@ class PhotoPickerService {
     }
   }
 }
-

@@ -627,7 +627,13 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
                   : selectedAssets.length;
           final batch = selectedAssets.sublist(i, end);
           final batchResults = await Future.wait(
-            batch.map(PhotoPickerService.toPhotoPickerFile),
+            batch.map(
+              (asset) => PhotoPickerService.toPhotoPickerFile(
+                asset,
+                enableBlurHash: config.enableBlurHash,
+                blurHashSize: config.blurHashSize,
+              ),
+            ),
           );
           files.addAll(batchResults);
         }
@@ -651,7 +657,11 @@ class PhotoPickerNotifier extends StateNotifier<PhotoPickerState> {
         return Navigator.pop(context, list);
       } else {
         final asset = state.globalSelectedAssets.first;
-        final file = await PhotoPickerService.toPhotoPickerFile(asset);
+        final file = await PhotoPickerService.toPhotoPickerFile(
+          asset,
+          enableBlurHash: config.enableBlurHash,
+          blurHashSize: config.blurHashSize,
+        );
         if (!context.mounted) {
           return;
         }

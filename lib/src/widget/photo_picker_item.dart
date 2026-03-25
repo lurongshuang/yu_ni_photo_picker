@@ -70,12 +70,12 @@ class _PhotoPickerItemState extends ConsumerState<PhotoPickerItem> {
         if (bytes == null) {
           return Center(
             child: Container(
-              decoration: BoxDecoration(color: config.colors.surface),
+              decoration: BoxDecoration(color: config.colors.background),
             ),
           );
         }
         final image = Container(
-          color: config.colors.surface,
+          color: config.colors.background,
           child: Image.memory(bytes, fit: BoxFit.cover),
         );
         return GestureDetector(
