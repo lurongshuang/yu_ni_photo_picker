@@ -248,7 +248,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
       decoration: BoxDecoration(
         color: config.colors.surface,
         border: Border(
-          top: BorderSide(color: config.colors.background, width: 1),
+          top: BorderSide(color: config.colors.background, width: 0.5),
         ),
       ),
       alignment: Alignment.center,
@@ -290,15 +290,21 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
                                   padding: EdgeInsets.symmetric(
                                     vertical: config.spacing.sm,
                                   ),
+                                  height: 38,
+                                  alignment: Alignment.center,
                                   child: YText(
                                     '原图',
                                     style: config.textStyles.bodyMediumBold
                                         .copyWith(height: 1),
                                   ),
                                 ),
-                                if (status.sendOriginal) ...[
-                                  YSpacing.widthSm(),
-                                  YText(
+                                // if (status.sendOriginal) ...
+                                YSpacing.widthSm(),
+                                Container(
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  height: 38,
+                                  child: YText(
                                     sizeText,
                                     style: config.textStyles.bodySmallRegular
                                         .copyWith(
@@ -306,7 +312,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage>
                                           height: 1,
                                         ),
                                   ),
-                                ],
+                                ),
                               ],
                             ),
                           ),

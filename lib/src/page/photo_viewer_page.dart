@@ -135,7 +135,10 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
                       YSpacing.heightMd(),
                       YText(
                         '正在处理中...',
-                        style: YuniWidgetConfig.instance.textStyles.bodyMediumBold
+                        style: YuniWidgetConfig
+                            .instance
+                            .textStyles
+                            .bodyMediumBold
                             .copyWith(color: Colors.black),
                       ),
                     ],
@@ -508,21 +511,29 @@ class _PhotoViewerPageState extends ConsumerState<PhotoViewerPage> {
           children: [
             RadioIconWidget(selected: pickerState.sendOriginal, size: 20),
             YSpacing.widthSm(),
-            YText(
-              '原图',
-              style: config.textStyles.bodyMediumBold.copyWith(
-                color: config.colors.onInfo,
+            Container(
+              height: 38,
+              alignment: Alignment.center,
+              child: YText(
+                '原图',
+                style: config.textStyles.bodyMediumBold.copyWith(
+                  color: config.colors.onInfo,
+                  height: 1,
+                ),
               ),
             ),
-            if (pickerState.sendOriginal) ...[
-              YSpacing.widthSm(),
-              YText(
+            YSpacing.widthSm(),
+            Container(
+              height: 38,
+              alignment: Alignment.center,
+              child: YText(
                 sizeText,
                 style: config.textStyles.bodySmallRegular.copyWith(
                   color: config.colors.onInfo,
+                  height: 1,
                 ),
               ),
-            ],
+            ),
           ],
         ),
       ),
